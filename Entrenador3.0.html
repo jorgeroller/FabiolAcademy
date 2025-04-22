@@ -109,18 +109,28 @@
             <h3 class="text-xl font-bold text-center mb-2">Resumen de Entrenamientos</h3>
             <div class="flex justify-between items-center">
                 <div class="text-center">
-                    <p class="text-2xl font-bold text-green-500" id="total-hours">0</p>
-                    <p class="text-sm font-medium text-gray-600">Horas Acumuladas</p>
+                    <p class="text-2xl font-bold text-green-500">
+                        <span class="material-icons align-middle" style="color: #22c55e;">schedule</span> 
+                        <span id="total-hours">0</span>
+                    </p>
+                    <p class="text-l font-big text-green-600">Horas Acumuladas</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-2xl font-bold text-blue-500" id="total-days">0</p>
-                    <p class="text-sm font-medium text-gray-600">Días Entrenados</p>
+                    <p class="text-2xl font-bold text-blue-500">
+                        <span class="material-icons align-middle" style="color: #3b82f6;">calendar_today</span> 
+                        <span id="total-days">0</span>
+                    </p>
+                    <p class="text-m font-medium text-blue-600">Días Entrenados</p>
                 </div>
             </div>
         </div>
         <div id="start-screen" class="text-center">
-            <button id="import-routine-button" class="btn btn-secondary mt-4">Nueva Rutina</button>
-            <button id="show-completions-button" class="btn btn-primary mt-4">Entrenamientos Previos</button>
+            <button id="import-routine-button" class="btn btn-secondary mt-4">
+                <span class="material-icons align-middle text-white">upload_file</span> Nueva Rutina
+            </button>
+            <button id="show-completions-button" class="btn btn-primary mt-4">
+                <span class="material-icons align-middle text-white">fitness_center</span> Entrenamientos Previos
+            </button>
             <div id="saved-routines" class="mt-6">
                 <h2 class="text-lg font-bold mb-2">Rutinas Guardadas:</h2>
                 <div id="routine-buttons" class="space-y-2"></div>
