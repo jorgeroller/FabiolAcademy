@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrenamiento de Glúteos</title>
+    <title>Rutinas</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        /* Paleta de colores inspirada en Caliber.com */
         body {
-            background: linear-gradient(135deg, #f5f7fa, #e4ebf5); /* Fondo degradado azul claro */
-            color: #2c3e50; /* Texto en azul oscuro */
+            background: linear-gradient(135deg, #f5f7fa, #e4ebf5);
+            color: #2c3e50;
         }
         .exercise-card {
-            background-color: #ffffff; /* Fondo blanco para las tarjetas */
+            background-color: #ffffff;
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
         #timer {
-            font-family: 'Digital-7 Mono', sans-serif; /* Fuente estilo reloj digital */
+            font-family: 'Digital-7 Mono', sans-serif;
             font-size: 2rem;
-            color: #1abc9c; /* Verde menta para el reloj */
+            color: #1abc9c;
         }
         .series-text {
-            font-size: 1.25rem; /* Tamaño más grande para las series */
-            color: #3498db; /* Azul claro para las series */
+            font-size: 1.25rem;
+            color: #3498db;
         }
         .description-text {
-            font-size: 1.1rem; /* Tamaño más grande para la descripción */
-            color: #34495e; /* Azul oscuro para el texto */
+            font-size: 1.1rem;
+            color: #34495e;
         }
         .step-counter {
-            background-color: #ecf0f1; /* Fondo gris claro */
+            background-color: #ecf0f1;
             border-top: 1px solid #bdc3c7;
             padding: 0.5rem;
             text-align: center;
             font-size: 1rem;
             font-weight: bold;
-            color: #2c3e50; /* Azul oscuro */
-            margin-top: 1rem; /* Margen adicional */
+            color: #2c3e50;
+            margin-top: 1rem;
         }
         .button-container {
-            margin-bottom: 1rem; /* Margen entre botones y contador de pasos */
+            margin-bottom: 1rem;
         }
         .btn {
             font-weight: bold;
@@ -49,117 +49,277 @@
             transition: background-color 0.3s ease;
         }
         .btn-primary {
-            background-color: #3498db; /* Azul claro */
+            background-color: #3498db;
             color: #ffffff;
         }
         .btn-primary:hover {
-            background-color: #2980b9; /* Azul más oscuro */
+            background-color: #2980b9;
         }
         .btn-secondary {
-            background-color: #95a5a6; /* Gris claro */
+            background-color: #95a5a6;
             color: #ffffff;
         }
         .btn-secondary:hover {
-            background-color: #7f8c8d; /* Gris más oscuro */
+            background-color: #7f8c8d;
         }
         .btn-success {
-            background-color: #1abc9c; /* Verde menta */
+            background-color: #1abc9c;
             color: #ffffff;
         }
         .btn-success:hover {
-            background-color: #16a085; /* Verde más oscuro */
+            background-color: #16a085;
+        }
+        .routine-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+            height: 60px; /* Altura uniforme */
+        }
+        .routine-name {
+            flex-grow: 1;
+            text-align: left;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .material-icons {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #e74c3c;
+        }
+        .material-icons:hover {
+            color: #c0392b;
         }
     </style>
 </head>
 <body>
     <div class="max-w-md mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center mb-6" style="color: #2c3e50;">Entrenamiento de Glúteos</h1>
+        <h1 class="text-3xl font-bold text-center mb-6" style="color: #2c3e50;">Entrenamientos</h1>
         
-        <!-- Botón para iniciar entrenamiento -->
-        <div id="start-screen" class="text-center">
-            <button id="start-button" class="btn btn-primary">
-                Empezar Entrenamiento
-            </button>
+        <!-- Pantalla inicial -->
+        <div id="summary-card" class="p-4 bg-white rounded-lg shadow-md mb-4">
+            <h3 class="text-xl font-bold text-center mb-2">Resumen de Entrenamientos</h3>
+            <div class="flex justify-between items-center">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-green-500" id="total-hours">0</p>
+                    <p class="text-sm font-medium text-gray-600">Horas Acumuladas</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-blue-500" id="total-days">0</p>
+                    <p class="text-sm font-medium text-gray-600">Días Entrenados</p>
+                </div>
+            </div>
         </div>
-
-        <!-- Cronómetro y pasos -->
-        <div id="workout" class="hidden">
-            <div id="timer" class="text-center text-lg font-medium mb-4">00:00</div>
-            <div id="exercise-container">
-                <!-- Los pasos del entrenamiento se generarán dinámicamente aquí -->
+        <div id="start-screen" class="text-center">
+            <button id="import-routine-button" class="btn btn-secondary mt-4">Nueva Rutina</button>
+            <button id="show-completions-button" class="btn btn-primary mt-4">Entrenamientos Previos</button>
+            <div id="saved-routines" class="mt-6">
+                <h2 class="text-lg font-bold mb-2">Rutinas Guardadas:</h2>
+                <div id="routine-buttons" class="space-y-2"></div>
             </div>
         </div>
 
-        <!-- Pantalla final -->
-        <div id="end-screen" class="hidden text-center">
-            <h2 class="text-2xl font-bold" style="color: #2c3e50;">¡Entrenamiento terminado!</h2>
-            <p class="text-lg" style="color: #34495e;">Tiempo total: <span id="final-time"></span></p>
+        <!-- Pantalla de entrenamiento -->
+        <div id="workout" class="hidden">
+            <h2 id="routine-title" class="text-2xl font-bold text-center mb-4"></h2>
+            <div id="timer" class="text-center text-lg font-medium mb-4">00:00</div>
+            <div id="exercise-container"></div>
+        </div>
+        <!-- Pantalla de registros de entrenamientos -->
+        <div id="completions-screen" class="hidden">
+            <h2 class="text-2xl font-bold text-center mb-4">Datos de Entrenamientos Previos</h2>
+            <div id="completions-list" class="space-y-4"></div>
+            <button id="back-to-main-button" class="btn btn-secondary mt-4">Volver a la Pantalla Principal</button>
+        </div>
+        <!-- Modal para importar rutina -->
+        <div id="import-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white rounded-lg p-6 w-96">
+                <h2 class="text-xl font-bold mb-4 text-center">Importar Rutina</h2>
+                <label class="block mb-2 font-medium">Nombre de la Rutina:</label>
+                <input id="routine-name" type="text" class="w-full border border-gray-300 rounded-md p-2 mb-4" placeholder="Ejemplo: Rutina Glúteos">
+                <label class="block mb-2 font-medium">Archivo JSON:</label>
+                <input id="routine-file" type="file" accept=".json" class="w-full border border-gray-300 rounded-md p-2 mb-4">
+                <div class="flex justify-end space-x-4">
+                    <button id="cancel-button" class="btn btn-secondary">Cancelar</button>
+                    <button id="save-button" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const exercises = [
-            { name: "Puente de glúteos con goma", series: 3, reps: "12-15", description: "Coloca la goma alrededor de los muslos, realiza el puente de glúteos mientras mantienes tensión en la goma.", image: "https://bulevip.com/blog/wp-content/uploads/2019/07/ejercicios-con-bandas-elasticas-puente-hombros.jpg"},
-            { name: "Elevaciones de pierna lateral con goma", series: 3, reps: "12 por lado", description: "Coloca la goma justo encima de las rodillas y levanta la pierna superior manteniendo tensión constante.", image: "https://i.ytimg.com/vi/L5dD0RfQDdw/maxresdefault.jpg"},
-            { name: "Sentadillas con goma", series: 3, reps: "10-12", description: "Con la goma alrededor de los muslos, realiza sentadillas asegurándote de que las rodillas no sobrepasen los pies.", image: "https://www.clikisalud.net/wp-content/uploads/2020/11/sentadillas-bandas-resistencia-beneficios.jpg"},
-            { name: "Extensión de cadera con goma", series: 3, reps: "12 por pierna", description: "Fija la goma a un soporte estable y tu tobillo; lleva la pierna hacia atrás contra la resistencia.", image: "https://i.ytimg.com/vi/E7FzVQA2xSo/maxresdefault.jpg" },
-            { name: "Movilidad de cadera 90/90", series: 3, reps: "10 repeticiones por lado", description: "Sentado con las plantas de los pies apoyadas en el sueloy las palmas de las manos también realizar baja de rodilla a tobillo contrario.", image: "https://www.sportlife.es/uploads/s1/13/14/52/01/shinbox-arrastra-a-la-otra-pierna.jpeg" },
-            { name: "Paso lateral con goma", series: 3, reps: "10 pasos por lado", description: "En posición semi-flexionada, da pasos laterales manteniendo tensión en la goma.", image: "https://hips.hearstapps.com/hmg-prod/images/lateral-walk-1655401317.jpg?crop=0.84375xw:1xh;center,top&resize=980:*" },
-            { name: "Patada de burro con goma", series: 3, reps: "12 por pierna", description: "En posición de cuatro puntos, eleva una pierna hacia arriba y hacia atrás manteniendo tensión en la goma.", image: "https://i.ytimg.com/vi/v_32LIrNgC4/maxresdefault.jpg" },
-            { name: "Fire Hydrants con goma", series: 3, reps: "12 por lado", description: "Desde la posición de cuatro puntos, levanta una pierna hacia un lado como si fueras un perro levantando la pata.", image: "https://hips.hearstapps.com/hmg-prod/images/fire-hydrant-1655401679.jpg" },
-            { name: "Clamshell (Apertura de cadera)", series: 3, reps: "12 por lado", description: "Acostado de lado con las rodillas flexionadas, abre las rodillas como una 'almeja' sin mover las caderas.", image: "https://blog.nasm.org/hubfs/clamshell-workout.jpg" },
-        ];
-
-        let currentExercise = 0;
-        let completedTime = 0;
-        let timerInterval;
-
-        const timer = document.getElementById("timer");
         const startScreen = document.getElementById("start-screen");
         const workout = document.getElementById("workout");
-        const endScreen = document.getElementById("end-screen");
+        const routineButtonsContainer = document.getElementById("routine-buttons");
+        const importModal = document.getElementById("import-modal");
+        const routineNameInput = document.getElementById("routine-name");
+        const routineFileInput = document.getElementById("routine-file");
+        const saveButton = document.getElementById("save-button");
+        const cancelButton = document.getElementById("cancel-button");
+        const routineTitle = document.getElementById("routine-title");
         const exerciseContainer = document.getElementById("exercise-container");
-        const finalTime = document.getElementById("final-time");
+        const timer = document.getElementById("timer");
 
-        function startTimer() {
-            let seconds = 0;
-            timerInterval = setInterval(() => {
-                seconds++;
-                completedTime = seconds;
-                const minutes = Math.floor(seconds / 60);
-                const remainderSeconds = seconds % 60;
-                timer.textContent = `${minutes.toString().padStart(2, '0')}:${remainderSeconds.toString().padStart(2, '0')}`;
-            }, 1000);
+        let exercises = [];
+        let currentRoutine = "";
+        let timerInterval;
+        let completedTime = 0;
+        // Cargar rutinas guardadas al inicio
+        document.addEventListener("DOMContentLoaded", () => {
+            loadSavedRoutines();
+            updateSummaryCard();
+        });
+        // Mostrar rutinas guardadas
+        function loadSavedRoutines() {
+            routineButtonsContainer.innerHTML = "";
+            const routines = Object.keys(localStorage)
+                .filter(key => key.startsWith("routine-") && (key !== "routine-completions")); // Excluir "routine-completions"
+
+            routines.forEach(routineKey => {
+                const routineName = routineKey.replace("routine-", "");
+                const container = document.createElement("div");
+                container.className = "routine-container";
+
+                const nameElement = document.createElement("span");
+                nameElement.textContent = routineName;
+                nameElement.className = "routine-name";
+                nameElement.addEventListener("click", () => loadRoutine(routineName));
+
+                const deleteIcon = document.createElement("span");
+                deleteIcon.className = "material-icons";
+                deleteIcon.textContent = "delete";
+                deleteIcon.addEventListener("click", () => deleteRoutine(routineName));
+
+                container.appendChild(nameElement);
+                container.appendChild(deleteIcon);
+                routineButtonsContainer.appendChild(container);
+            });
+        }
+        // Mostrar datos de entrenamientos previos
+        const showCompletionsButton = document.getElementById("show-completions-button");
+        const completionsScreen = document.getElementById("completions-screen");
+        const completionsList = document.getElementById("completions-list");
+        const backToMainButton = document.getElementById("back-to-main-button");
+
+        showCompletionsButton.addEventListener("click", () => {
+            startScreen.classList.add("hidden");
+            completionsScreen.classList.remove("hidden");
+            loadCompletions();
+        });
+
+        // Volver a la pantalla principal
+        backToMainButton.addEventListener("click", () => {
+            completionsScreen.classList.add("hidden");
+            startScreen.classList.remove("hidden");
+            document.getElementById("summary-card").classList.remove("hidden"); // Mostrar el resumen
+        });
+        function updateSummaryCard() {
+            const completions = JSON.parse(localStorage.getItem("routine-completions") || "[]");
+            console.log("Completions:", completions);
+
+            if (completions.length === 0) {
+                console.log("No hay datos de entrenamientos.");
+                document.getElementById("total-hours").textContent = "0";
+                document.getElementById("total-days").textContent = "0";
+                return;
+            }
+
+            const totalSeconds = completions.reduce((sum, completion) => {
+                const [minutes, seconds] = completion.time.split(":").map(Number);
+                return sum + minutes * 60 + seconds;
+            }, 0);
+            const totalHours = (totalSeconds / 3600).toFixed(2);
+            console.log("Total Hours:", totalHours);
+
+            const uniqueDates = new Set(completions.map(completion => completion.date));
+            const totalDays = uniqueDates.size;
+            console.log("Total Days:", totalDays);
+
+            document.getElementById("total-hours").textContent = totalHours;
+            document.getElementById("total-days").textContent = totalDays;
+        }
+        // Cargar datos de entrenamientos previos
+        function loadCompletions() {
+            completionsList.innerHTML = "";
+            const completions = JSON.parse(localStorage.getItem("routine-completions") || "[]");
+
+            if (completions.length === 0) {
+                completionsList.innerHTML = `
+                    <div class="p-4 bg-white rounded-lg shadow-md text-center">
+                        <p class="text-gray-600">No hay entrenamientos registrados.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            completions.forEach(completion => {
+                const completionItem = document.createElement("div");
+                completionItem.className = "p-4 bg-white rounded-lg shadow-md";
+                completionItem.innerHTML = `
+                    <p><strong>Rutina:</strong> ${completion.routine}</p>
+                    <p><strong>Fecha:</strong> ${completion.date}</p>
+                    <p><strong>Tiempo:</strong> ${completion.time}</p>
+                `;
+                completionsList.appendChild(completionItem);
+            });
+        }
+        // Cargar rutina seleccionada
+        function loadRoutine(routineName) {
+            console.log("Cargando rutina:", routineName);
+            const routineData = localStorage.getItem(`routine-${routineName}`);
+            document.getElementById("summary-card").classList.add("hidden"); // Ocultar el resumen
+            if (routineData) {
+                exercises = JSON.parse(routineData);
+                currentRoutine = routineName;
+                routineTitle.textContent = `Rutina: ${routineName}`;
+                startScreen.classList.add("hidden");
+                workout.classList.remove("hidden");
+               
+                startTimer();
+                showExercise(0);
+            } else {
+                alert("Rutina no encontrada.");
+            }
         }
 
+        // Mostrar ejercicio actual
         function showExercise(index) {
             if (index >= exercises.length) {
                 clearInterval(timerInterval);
+                saveCompletionData();
+                alert("¡Entrenamiento completado!");
                 workout.classList.add("hidden");
-                endScreen.classList.remove("hidden");
-                finalTime.textContent = timer.textContent;
+                startScreen.classList.remove("hidden");
+                    // Mostrar la tarjeta de resumen
+                const summaryCard = document.getElementById("summary-card");
+                if (summaryCard) {
+                    summaryCard.classList.remove("hidden");
+                }
                 return;
             }
 
             const exercise = exercises[index];
-
             exerciseContainer.innerHTML = `
                 <div class="exercise-card p-4 mb-6">
-                    <h2 class="text-2xl font-bold text-indigo-400 mb-2" style="color: #2c3e50;">${exercise.name}</h2>
+                    <h3 class="text-xl font-bold mb-2">${exercise.name}</h3>
                     <img src="${exercise.image}" alt="${exercise.name}" class="w-full rounded-md mb-4">
-                    <p class="series-text"><strong>Series:</strong> <span id="current-series">0</span>/${exercise.series}</p>
-                    <p class="text-lg text-green-500 mb-2"><strong>Rep:</strong> ${exercise.reps}</p>
-                    <p class="description-text"><strong>Descripción:</strong> ${exercise.description}</p>
+                    <p><strong>Series:</strong> <span id="current-series">0</span>/${exercise.series}</p>
+                    <p><strong>Repeticiones:</strong> ${exercise.reps}</p>
+                    <p><strong>Descripción:</strong> ${exercise.description}</p>
                     <div class="button-container flex justify-between items-center">
-                        <button id="prev-step-button" class="btn btn-secondary">
-                            Paso Anterior
-                        </button>
+                        <button id="prev-step-button" class="btn btn-secondary">Paso Anterior</button>
                         <button id="add-series-button" class="btn btn-primary w-12 h-12 flex items-center justify-center">
                             <span class="text-2xl font-bold">+</span>
                         </button>
-                        <button id="next-step-button" class="btn btn-secondary">
-                            Siguiente Paso
-                        </button>
+                        <button id="next-step-button" class="btn btn-secondary">Siguiente Paso</button>
                     </div>
                     <div class="step-counter">Paso: ${index + 1}/${exercises.length}</div>
                 </div>
@@ -172,38 +332,106 @@
             let seriesCount = 0;
 
             prevStepButton.addEventListener("click", () => {
-                if (currentExercise > 0) {
-                    currentExercise--;
-                    showExercise(currentExercise);
+                if (index > 0) {
+                    showExercise(index - 1);
                 }
             });
 
             addSeriesButton.addEventListener("click", () => {
                 seriesCount++;
+                currentSeries.textContent = seriesCount;
                 if (seriesCount === exercise.series - 1) {
+                    // Cambiar el botón a verde con el icono de "ok"
                     addSeriesButton.classList.remove("btn-primary");
                     addSeriesButton.classList.add("btn-success");
-                    addSeriesButton.innerHTML = `<span class="text-2xl font-bold">✔</span>`;
-                }
-                currentSeries.textContent = seriesCount;
-                if (seriesCount === exercise.series) {
-                    currentExercise++;
-                    showExercise(currentExercise);
+                    addSeriesButton.innerHTML = '<span class="material-icons" style="color: white;">check</span>';
+                } else if (seriesCount === exercise.series) {
+                    // Pasar al siguiente ejercicio
+                    showExercise(index + 1);
                 }
             });
 
             nextStepButton.addEventListener("click", () => {
-                currentExercise++;
-                showExercise(currentExercise);
+                showExercise(index + 1);
             });
         }
 
-        document.getElementById("start-button").addEventListener("click", () => {
-            startScreen.classList.add("hidden");
-            workout.classList.remove("hidden");
-            startTimer();
-            showExercise(currentExercise);
+        // Guardar datos de finalización
+        function saveCompletionData() {
+            const date = new Date().toLocaleDateString();
+            const time = timer.textContent;
+
+            const completions = JSON.parse(localStorage.getItem("routine-completions") || "[]");
+            completions.push({ routine: currentRoutine, date, time });
+            localStorage.setItem("routine-completions", JSON.stringify(completions));
+        }
+
+        // Iniciar cronómetro
+        function startTimer() {
+            let seconds = 0;
+            timerInterval = setInterval(() => {
+                seconds++;
+                completedTime = seconds;
+                const minutes = Math.floor(seconds / 60);
+                const remainderSeconds = seconds % 60;
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${remainderSeconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Eliminar rutina
+        function deleteRoutine(routineName) {
+            if (confirm(`¿Estás seguro de eliminar la rutina "${routineName}"?`)) {
+                localStorage.removeItem(`routine-${routineName}`);
+                loadSavedRoutines();
+            }
+        }
+
+        // Guardar rutina importada
+        saveButton.addEventListener("click", () => {
+            const routineName = routineNameInput.value.trim();
+            const file = routineFileInput.files[0];
+
+            if (!routineName || !file) {
+                alert("Por favor, completa todos los campos.");
+                return;
+            }
+
+            if (localStorage.getItem(`routine-${routineName}`)) {
+                alert("El nombre de la rutina ya existe. Usa otro nombre.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const exercises = JSON.parse(event.target.result);
+                    localStorage.setItem(`routine-${routineName}`, JSON.stringify(exercises));
+                    alert("Rutina guardada exitosamente.");
+                    loadSavedRoutines();
+                    importModal.classList.add("hidden");
+                    routineNameInput.value = "";
+                    routineFileInput.value = "";
+                } catch (error) {
+                    alert("El archivo JSON no es válido.");
+                }
+            };
+            reader.readAsText(file);
         });
+
+        // Cancelar importación
+        cancelButton.addEventListener("click", () => {
+            importModal.classList.add("hidden");
+            routineNameInput.value = "";
+            routineFileInput.value = "";
+        });
+
+        // Mostrar modal de importación
+        document.getElementById("import-routine-button").addEventListener("click", () => {
+            importModal.classList.remove("hidden");
+        });
+
+        // Cargar rutinas al iniciar
+        document.addEventListener("DOMContentLoaded", loadSavedRoutines);
     </script>
 </body>
 </html>
