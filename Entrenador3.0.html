@@ -98,6 +98,13 @@
         .material-icons:hover {
             color: #c0392b;
         }
+        .btn-danger {
+        background-color: #e74c3c;
+        color: #ffffff;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -147,6 +154,7 @@
         <div id="completions-screen" class="hidden">
             <h2 class="text-2xl font-bold text-center mb-4">Datos de Entrenamientos Previos</h2>
             <div id="completions-list" class="space-y-4"></div>
+            <button id="delete-all-completions-button" class="btn btn-danger mt-4">Eliminar Todos</button>
             <button id="back-to-main-button" class="btn btn-secondary mt-4">Volver a la Pantalla Principal</button>
         </div>
         <!-- Modal para importar rutina -->
@@ -270,16 +278,37 @@
                 return;
             }
 
-            completions.forEach(completion => {
+            completions.forEach((completion, index) => {
                 const completionItem = document.createElement("div");
-                completionItem.className = "p-4 bg-white rounded-lg shadow-md";
+                completionItem.className = "p-4 bg-white rounded-lg shadow-md flex justify-between items-center";
                 completionItem.innerHTML = `
-                    <p><strong>Rutina:</strong> ${completion.routine}</p>
-                    <p><strong>Fecha:</strong> ${completion.date}</p>
-                    <p><strong>Tiempo:</strong> ${completion.time}</p>
+                    <div>
+                        <p><strong>Rutina:</strong> ${completion.routine}</p>
+                        <p><strong>Fecha:</strong> ${completion.date}</p>
+                        <p><strong>Tiempo:</strong> ${completion.time}</p>
+                    </div>
+                    <span class="material-icons text-red-500 cursor-pointer hover:text-red-700" onclick="deleteCompletion(${index})">delete</span>
                 `;
                 completionsList.appendChild(completionItem);
             });
+        }
+
+        // Eliminar un registro de entrenamiento
+        function deleteCompletion(index) {
+            const completions = JSON.parse(localStorage.getItem("routine-completions") || "[]");
+            completions.splice(index, 1); // Eliminar el registro en la posición indicada
+            localStorage.setItem("routine-completions", JSON.stringify(completions));
+            loadCompletions(); // Recargar la lista de registros
+            updateSummaryCard(); // Actualizar el resumen
+        }
+
+        // Eliminar todos los registros de entrenamiento
+        function deleteAllCompletions() {
+            if (confirm("¿Estás seguro de que deseas eliminar todos los registros de entrenamiento?")) {
+                localStorage.removeItem("routine-completions"); // Eliminar todos los registros
+                loadCompletions(); // Recargar la lista de registros
+                updateSummaryCard(); // Actualizar el resumen
+            }
         }
         // Cargar rutina seleccionada
         function loadRoutine(routineName) {
@@ -300,7 +329,16 @@
             }
         }
 
-        // Mostrar ejercicio actual
+        function extractYouTubeId(url) {
+            // Expresión regular para extraer el ID del vídeo
+            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:embed\/|watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regExp);
+            if (match && match[1]) {
+                return match[1]; // Devuelve el ID del vídeo
+            }
+            return null; // Si no se encuentra un ID válido, devuelve null
+        }
+
         function showExercise(index) {
             if (index >= exercises.length) {
                 clearInterval(timerInterval);
@@ -308,7 +346,6 @@
                 alert("¡Entrenamiento completado!");
                 workout.classList.add("hidden");
                 startScreen.classList.remove("hidden");
-                    // Mostrar la tarjeta de resumen
                 const summaryCard = document.getElementById("summary-card");
                 if (summaryCard) {
                     summaryCard.classList.remove("hidden");
@@ -317,10 +354,32 @@
             }
 
             const exercise = exercises[index];
+            let mediaElement = "";
+
+            // Verificar si el recurso es una imagen o un vídeo
+            if (exercise.type === "video") {
+                const videoId = extractYouTubeId(exercise.media);
+                if (videoId) {
+                    mediaElement = `
+                        <iframe class="w-full rounded-md mb-4" height="315" 
+                            src="https://www.youtube.com/embed/${videoId}" 
+                            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    `;
+                } else {
+                    mediaElement = `<p>Error: No se pudo cargar el vídeo. Verifica la URL.</p>`;
+                }
+            } else {
+                mediaElement = `
+                    <img src="${exercise.media}" alt="${exercise.name}" class="w-full rounded-md mb-4">
+                `;
+            }
+
             exerciseContainer.innerHTML = `
                 <div class="exercise-card p-4 mb-6">
                     <h3 class="text-xl font-bold mb-2">${exercise.name}</h3>
-                    <img src="${exercise.image}" alt="${exercise.name}" class="w-full rounded-md mb-4">
+                    ${mediaElement}
                     <p><strong>Series:</strong> <span id="current-series">0</span>/${exercise.series}</p>
                     <p><strong>Repeticiones:</strong> ${exercise.reps}</p>
                     <p><strong>Descripción:</strong> ${exercise.description}</p>
@@ -351,12 +410,10 @@
                 seriesCount++;
                 currentSeries.textContent = seriesCount;
                 if (seriesCount === exercise.series - 1) {
-                    // Cambiar el botón a verde con el icono de "ok"
                     addSeriesButton.classList.remove("btn-primary");
                     addSeriesButton.classList.add("btn-success");
                     addSeriesButton.innerHTML = '<span class="material-icons" style="color: white;">check</span>';
                 } else if (seriesCount === exercise.series) {
-                    // Pasar al siguiente ejercicio
                     showExercise(index + 1);
                 }
             });
@@ -364,6 +421,13 @@
             nextStepButton.addEventListener("click", () => {
                 showExercise(index + 1);
             });
+        }
+
+        // Función para extraer el ID de un vídeo de YouTube
+        function extractYouTubeId(url) {
+            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
         }
 
         // Guardar datos de finalización
@@ -415,6 +479,23 @@
             reader.onload = (event) => {
                 try {
                     const exercises = JSON.parse(event.target.result);
+
+                    // Validar el formato del JSON
+                    if (!Array.isArray(exercises)) {
+                        throw new Error("El archivo JSON debe contener un array de ejercicios.");
+                    }
+
+                    exercises.forEach((exercise, index) => {
+                        if (!exercise.name || !exercise.series || !exercise.reps || !exercise.description || !exercise.type || !exercise.media) {
+                            throw new Error(`El ejercicio en la posición ${index + 1} no tiene todos los campos requeridos.`);
+                        }
+
+                        if (exercise.type !== "image" && exercise.type !== "video") {
+                            throw new Error(`El ejercicio en la posición ${index + 1} tiene un tipo inválido. Debe ser "image" o "video".`);
+                        }
+                    });
+
+                    // Guardar la rutina en localStorage
                     localStorage.setItem(`routine-${routineName}`, JSON.stringify(exercises));
                     alert("Rutina guardada exitosamente.");
                     loadSavedRoutines();
@@ -422,9 +503,11 @@
                     routineNameInput.value = "";
                     routineFileInput.value = "";
                 } catch (error) {
-                    alert("El archivo JSON no es válido.");
+                    console.error("Error al procesar el archivo JSON:", error);
+                    alert(`El archivo JSON no es válido: ${error.message}`);
                 }
             };
+
             reader.readAsText(file);
         });
 
@@ -435,6 +518,8 @@
             routineFileInput.value = "";
         });
 
+        // Eliminar todos los registros de entrenamiento
+        document.getElementById("delete-all-completions-button").addEventListener("click", deleteAllCompletions);
         // Mostrar modal de importación
         document.getElementById("import-routine-button").addEventListener("click", () => {
             importModal.classList.remove("hidden");
